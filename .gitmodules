@@ -1,0 +1,6 @@
+[submodule "thirdLib/spdlog"]
+	path = thirdLib/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "thirdLib/httplib"]
+	path = thirdLib/httplib
+	url = https://github.com/yhirose/cpp-httplib.git

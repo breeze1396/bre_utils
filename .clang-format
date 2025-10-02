@@ -1,0 +1,15 @@
+---
+BasedOnStyle: google
+IndentWidth: 4
+ColumnLimit: 120
+AlignAfterOpenBracket: Align
+BraceWrapping:
+  AfterFunction: false
+  SplitEmptyFunction: true
+SortIncludes: CaseSensitive
+SpacesInAngles: Never
+AllowShortFunctionsOnASingleLine: All
+AllowShortLambdasOnASingleLine: false
+AccessModifierOffset: -4
+
+MaxEmptyLinesToKeep: 2
