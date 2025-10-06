@@ -1,3 +1,11 @@
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW)
+endif()
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
+
+
 if(APPLE)
     include(cmake/macos.cmake)                  # macOS平台配置
 elseif(UNIX)
@@ -59,18 +67,21 @@ function(link_sdl3 target)
 endfunction()
 
 # Boost 链接函数
-function(link_boost target)
+function(link_boost target components)
     if(WIN32)
         if(NOT BOOST_DIR_PATH)
             message(FATAL_ERROR "BOOST_DIR_PATH未设置，请检查平台配置文件")
         endif()
+        set(BOOST_ROOT "${BOOST_DIR_PATH}")
+        set(Boost_INCLUDE_DIR "${BOOST_ROOT}/include")
+        set(Boost_LIBRARY_DIR "${BOOST_ROOT}/lib")
 
-        include_directories(${BOOST_DIR_PATH}/include)
-        file(GLOB BOOST_LIBS "${BOOST_DIR_PATH}/lib/libboost_*.a" "${BOOST_DIR_PATH}/lib/libboost_*.lib")
-        target_link_libraries(${target} PRIVATE ${BOOST_LIBS})
+        find_package(Boost REQUIRED COMPONENTS ${components})
+
+        target_link_libraries(${target} PRIVATE ${Boost_LIBRARIES})
     else()
         # 查找 Boost，指定常用的组件
-        find_package(Boost REQUIRED COMPONENTS system filesystem thread chrono json)
+        find_package(Boost REQUIRED COMPONENTS ${components})
         if(NOT Boost_FOUND)
             message(FATAL_ERROR "Boost 未找到！请检查路径或安装情况")
         endif()
@@ -80,11 +91,7 @@ function(link_boost target)
         
         # 链接需要编译的库
         target_link_libraries(${target} PRIVATE 
-            Boost::system
-            Boost::filesystem
-            Boost::thread
-            Boost::chrono
-            Boost::json
+            ${Boost_LIBRARIES}
         )
     endif()
 endfunction()

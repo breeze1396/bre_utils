@@ -37,12 +37,9 @@ if(WIN32 AND MSVC)
   # MSVC 编译选项
   add_compile_options(
     /MP                          # 多进程编译
-    /W3                          # 警告级别 3
-    /wd4127                      # 禁用 C4127: 条件为常量
+    /W4                          # 警告级别 4
     /wd4201                      # 禁用 C4201: 名称未标准化（匿名结构体）
     /wd4251                      # 禁用 C4251: DLL 接口类需要导出
-    /wd4456 /wd4457 /wd4458 /wd4459  # 禁用变量遮蔽警告
-    /wd4595                      # 禁用 C4595: 内联函数无链接
     "$<$<CONFIG:DEBUG>:/DDEBUG=1;/D_DEBUG=1>"
     "$<$<CONFIG:RELWITHDEBINFO>:/Ob2>"
     /DUNICODE
@@ -58,11 +55,6 @@ if(WIN32 AND MSVC)
     "$<$<CONFIG:DEBUG>:LINKER\:/INCREMENTAL\:NO>"
     "$<$<CONFIG:RELWITHDEBINFO>:LINKER\:/INCREMENTAL\:NO;/OPT:ICF>"
   )
-
-  # x86/x64 架构 SIMD
-  if(LOWERCASE_CMAKE_SYSTEM_PROCESSOR MATCHES "(i[3-6]86|x86|x64|x86_64|amd64)")
-    set(ARCH_SIMD_FLAGS ${ARCH_SIMD_FLAGS} -mmmx -msse -msse2)
-  endif()
 
 # -----------------------------
 # 2. Linux (GNU/Clang)

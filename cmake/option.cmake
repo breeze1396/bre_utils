@@ -1,8 +1,12 @@
-
-option(BUILD_LEARN "Build the unit learn" On)
 option(BUILD_TESTS "Build the unit tests" On)
 option(BUILD_TOOLS "Build the unit tools" OFF)
-option(BUILD_BENCHMARK "Build the unit benchmark" ON)
+
+if(LINUX)
+    option(BUILD_BENCHMARK "Build the unit benchmark" ON)
+endif()
+
+
+
 
 message(STATUS "BUILD_TESTS: ${BUILD_TESTS}")
 message(STATUS "BUILD_TOOLS: ${BUILD_TOOLS}")
@@ -12,7 +16,6 @@ message(STATUS "BUILD_BENCHMARK: ${BUILD_BENCHMARK}")
 if(BUILD_TOOLS)
     add_subdirectory(${CMAKE_SOURCE_DIR}/tools)
 endif()
-
 
 # 启用测试
 if(BUILD_TESTS)

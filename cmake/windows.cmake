@@ -1,0 +1,1 @@
+set(BOOST_DIR_PATH "G:/codeEnv/boost_1_84" CACHE PATH "Boost root directory")

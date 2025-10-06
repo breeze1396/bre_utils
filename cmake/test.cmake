@@ -3,10 +3,7 @@ function(add_boost_test TARGET_NAME SOURCE_FILE)
     message(STATUS "Adding Boost test target: ${TARGET_NAME}")
     add_executable(${TARGET_NAME} ${SOURCE_FILE})
 
-    link_boost(${TARGET_NAME}  
-        REQUIRED
-        COMPONENTS unit_test_framework
-    )
+    link_boost(${TARGET_NAME} unit_test_framework)
 
     # Add the test to CTest
     add_test(NAME ${TARGET_NAME} COMMAND ${TARGET_NAME})
@@ -27,7 +24,7 @@ endfunction()
 # 拷贝Json测试数据到构建目录
 add_custom_target(copy_test_data ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/breUtils/json/test
+    ${CMAKE_SOURCE_DIR}/bre_utils/json/test
     ${CMAKE_BINARY_DIR}/test
 )
 message(STATUS "Copying test data to ${CMAKE_BINARY_DIR}/test")
