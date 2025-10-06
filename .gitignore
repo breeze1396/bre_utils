@@ -6,6 +6,7 @@ thirdLib/
 .DS_Store
 .AppleDouble
 .LSOverride
+.vscode
 
 ## Tool
 Cargo.lock
