@@ -67,33 +67,26 @@ function(link_sdl3 target)
 endfunction()
 
 # Boost 链接函数
+
 function(link_boost target components)
-    if(WIN32)
-        if(NOT BOOST_DIR_PATH)
-            message(FATAL_ERROR "BOOST_DIR_PATH未设置，请检查平台配置文件")
-        endif()
-        set(BOOST_ROOT "${BOOST_DIR_PATH}")
-        set(Boost_INCLUDE_DIR "${BOOST_ROOT}/include")
-        set(Boost_LIBRARY_DIR "${BOOST_ROOT}/lib")
-
-        find_package(Boost REQUIRED COMPONENTS ${components})
-
-        target_link_libraries(${target} PRIVATE ${Boost_LIBRARIES})
-    else()
-        # 查找 Boost，指定常用的组件
-        find_package(Boost REQUIRED COMPONENTS ${components})
-        if(NOT Boost_FOUND)
-            message(FATAL_ERROR "Boost 未找到！请检查路径或安装情况")
-        endif()
-        
-        # 只包含头文件库的目标
-        target_include_directories(${target} PRIVATE ${Boost_INCLUDE_DIRS})
-        
-        # 链接需要编译的库
-        target_link_libraries(${target} PRIVATE 
-            ${Boost_LIBRARIES}
-        )
+    # 查找 Boost，指定需要链接的组件
+    find_package(Boost REQUIRED COMPONENTS ${components})
+    
+    if(NOT Boost_FOUND)
+        message(FATAL_ERROR "Boost 未找到！请检查路径或安装情况")
     endif()
+    
+    # 输出调试信息
+    message(STATUS "Boost found: ${Boost_INCLUDE_DIRS}")
+    message(STATUS "Boost version: ${Boost_VERSION}")
+    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+    message(STATUS "Boost components: ${components}")
+    
+    # 包含头文件目录
+    target_include_directories(${target} PRIVATE ${Boost_INCLUDE_DIRS})
+    
+    # 链接需要编译的库
+    target_link_libraries(${target} PRIVATE ${Boost_LIBRARIES})
 endfunction()
 
 # OpenCV 链接函数
@@ -221,6 +214,49 @@ function(link_zlib target)
 endfunction(link_zlib target)
 
 
+# pcap 链接函数
+function(link_pcap target)
+    if(APPLE)
+        # macOS 自带 pcap 库，直接链接系统库
+        find_library(PCAP_LIBRARY pcap)
+        if(NOT PCAP_LIBRARY)
+            message(FATAL_ERROR "pcap 库未找到，请确认系统是否安装了 libpcap")
+        endif()
+        
+        message(STATUS "Found pcap library: ${PCAP_LIBRARY}")
+        target_link_libraries(${target} PRIVATE ${PCAP_LIBRARY})
+        
+    elseif(UNIX)
+        # Linux 系统使用 pkg-config 或 find_library
+        find_library(PCAP_LIBRARY pcap)
+        if(NOT PCAP_LIBRARY)
+            message(FATAL_ERROR "pcap 库未找到，请安装 libpcap-dev")
+        endif()
+        
+        message(STATUS "Found pcap library: ${PCAP_LIBRARY}")
+        target_link_libraries(${target} PRIVATE ${PCAP_LIBRARY})
+        
+    elseif(WIN32)
+        # Windows 需要安装 WinPcap 或 Npcap
+        if(NOT PCAP_DIR_PATH)
+            message(FATAL_ERROR "PCAP_DIR_PATH未设置，请在 windows.cmake 中设置 WinPcap/Npcap 路径")
+        endif()
+        
+        include_directories(${PCAP_DIR_PATH}/include)
+        link_directories(${PCAP_DIR_PATH}/lib)
+        
+        find_library(PCAP_LIBRARY NAMES wpcap PATHS ${PCAP_DIR_PATH}/lib NO_DEFAULT_PATH)
+        if(NOT PCAP_LIBRARY)
+            message(FATAL_ERROR "pcap 库未找到")
+        endif()
+        
+        target_link_libraries(${target} PRIVATE ${PCAP_LIBRARY} ws2_32)
+    else()
+        message(FATAL_ERROR "不支持的平台，无法链接 pcap")
+    endif()
+endfunction()
+
+
 
 
 # ========== 仅头文件库 ==========
@@ -232,9 +268,21 @@ function(link_breutils target)
     target_include_directories(${target} PRIVATE ${BREUTILS_DIR_PATH})
 endfunction()
 
+
+
 function(link_boost_header target)
-    message(STATUS "link_boost_header(${target}) with BOOST_DIR_PATH: ${BOOST_DIR_PATH}/include")
-    target_include_directories(${target} PRIVATE ${BOOST_DIR_PATH}/include)
+    # 查找 Boost（不需要任何组件）
+    find_package(Boost REQUIRED)
     
-endfunction(link_boost_header target)
+    if(NOT Boost_FOUND)
+        message(FATAL_ERROR "Boost 未找到！请检查路径或安装情况")
+    endif()
+    
+    # 输出调试信息
+    message(STATUS "Boost header-only found: ${Boost_INCLUDE_DIRS}")
+    message(STATUS "Boost version: ${Boost_VERSION}")
+    
+    # 只包含头文件目录，不链接任何库
+    target_include_directories(${target} PRIVATE ${Boost_INCLUDE_DIRS})
+endfunction()
 
