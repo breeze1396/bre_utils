@@ -66,8 +66,8 @@ function(link_sdl3 target)
     target_link_libraries(${target} PRIVATE SDL3::SDL3)
 endfunction()
 
-# Boost 链接函数
 
+# Boost 链接函数
 function(link_boost target components)
     # 查找 Boost，指定需要链接的组件
     find_package(Boost REQUIRED COMPONENTS ${components})
