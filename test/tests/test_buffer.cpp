@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE BufferTest
 #include <boost/test/included/unit_test.hpp>
-#include "breutils/buffer.hpp"
+#include "breutil/buffer.hpp"
 #include <string>
 
 BOOST_AUTO_TEST_SUITE(BufferTestSuite)

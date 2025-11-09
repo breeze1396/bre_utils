@@ -21,10 +21,12 @@ function(add_boost_test TARGET_NAME SOURCE_FILE)
 
 endfunction()
 
-# 拷贝Json测试数据到构建目录
-add_custom_target(copy_test_data ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/bre_utils/json/test
-    ${CMAKE_BINARY_DIR}/test
-)
-message(STATUS "Copying test data to ${CMAKE_BINARY_DIR}/test")
+function(copy_test_json_data)
+    # 拷贝Json测试数据到构建目录
+    add_custom_target(copy_test_data ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/breutils/json/test
+        ${CMAKE_BINARY_DIR}/test
+    )
+    message(STATUS "Copying test data to ${CMAKE_BINARY_DIR}/test")
+endfunction()

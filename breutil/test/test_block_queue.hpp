@@ -229,10 +229,14 @@ TEST_CASE(BlockQueue_PushBatch_Capacity_Limit) {
 
     // 批量 Push 超过容量应该等待
     std::vector<int> data = {1, 2, 3, 4, 5};
-    queue.Push(data.begin(), data.end());
+    size_t pushedCount = queue.Push(data.begin(), data.end());
 
-    ASSERT_TRUE(consumed);
-    ASSERT_EQ(2, queue.Size());
+    // 等待消费者消费完
+    while (!consumed) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    ASSERT_EQ(3, pushedCount);
+    ASSERT_EQ(0, queue.Size());
 
     consumer.join();
 }

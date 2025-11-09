@@ -224,9 +224,16 @@ public:
         return true;
     }
 
-    // 批量操作：一次性 Push 多个元素
+    /**
+     * 批量操作：一次性 Push 多个元素
+     * @param first 输入迭代器的起始位置
+     * @param last 输入迭代器的结束位置
+     * @return 成功放入的元素个数
+     */
     template <typename InputIt>
-    bool Push(InputIt first, InputIt last) {
+    size_t Push(InputIt first, InputIt last) {
+        size_t totalPushed = 0;
+
         // 判断个数是否满足全部放入，否则一个一个放入
         size_t count = std::distance(first, last);
         {
@@ -234,20 +241,21 @@ public:
             if (!_isClose && (_queue.size() + count <= _capacity)) {
                 for (auto it = first; it != last; ++it) {
                     _queue.push(*it);
+                    ++totalPushed;
                 }
                 _condConsumer.notify_all();
-                return true;
+                return totalPushed;
             }
         }
-
-        bool result;
+        // 一个一个放入
         for (auto it = first; it != last; ++it) {
-            result = TryPush(*it);
+            bool result = TryPush(*it);
             if (!result) {
-                return false;
+                break;
             }
+            ++totalPushed;  
         }
-        return true;
+        return totalPushed;
     }
 
     // 批量操作：一次性 Pop 多个元素
