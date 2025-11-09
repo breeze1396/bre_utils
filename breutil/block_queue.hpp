@@ -228,7 +228,7 @@ public:
     template <typename InputIt>
     bool Push(InputIt first, InputIt last) {
         // 判断个数是否满足全部放入，否则一个一个放入
-        int count = std::distance(first, last);
+        size_t count = std::distance(first, last);
         {
             std::lock_guard<std::mutex> locker(_mtx);
             if (!_isClose && (_queue.size() + count <= _capacity)) {
@@ -242,7 +242,7 @@ public:
 
         bool result;
         for (auto it = first; it != last; ++it) {
-            result = Push(*it);
+            result = TryPush(*it);
             if (!result) {
                 return false;
             }

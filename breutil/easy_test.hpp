@@ -119,7 +119,7 @@ public:
     // 断言：真值
     void assertTrue(bool expression, const std::string& expr_str, const std::string& file,
                     int line) {
-        tests_run_++;
+        _tests_run++;
         if (!expression) {
             _failed_tests.push_back({_current_test_name, nullptr, file, line});
             std::cerr << Color::RED << "[  FAILED  ] " << Color::RESET << file << ":" << line
@@ -132,7 +132,7 @@ public:
     // 断言：假值
     void assertFalse(bool expression, const std::string& expr_str, const std::string& file,
                      int line) {
-        tests_run_++;
+        _tests_run++;
         if (expression) {
             _failed_tests.push_back({_current_test_name, nullptr, file, line});
             std::cerr << Color::RED << "[  FAILED  ] " << Color::RESET << file << ":" << line
@@ -146,7 +146,7 @@ public:
     template <typename T1, typename T2>
     void assertEqual(const T1& expected, const T2& actual, const std::string& expr_str,
                      const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic push
@@ -167,7 +167,7 @@ public:
     template <typename T1, typename T2>
     void assertNotEqual(const T1& expected, const T2& actual, const std::string& expr_str,
                         const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
         if (expected == actual) {
             _failed_tests.push_back({_current_test_name, nullptr, file, line});
             std::cerr << Color::RED << "[  FAILED  ] " << Color::RESET << file << ":" << line
@@ -182,7 +182,7 @@ public:
     template <typename T1, typename T2>
     void assertLess(const T1& left, const T2& right, const std::string& expr_str,
                     const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic push
@@ -203,7 +203,7 @@ public:
     template <typename T1, typename T2>
     void assertLessEqual(const T1& left, const T2& right, const std::string& expr_str,
                          const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic push
@@ -224,7 +224,7 @@ public:
     template <typename T1, typename T2>
     void assertGreater(const T1& left, const T2& right, const std::string& expr_str,
                        const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic push
@@ -245,7 +245,7 @@ public:
     template <typename T1, typename T2>
     void assertGreaterEqual(const T1& left, const T2& right, const std::string& expr_str,
                             const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic push
@@ -268,7 +268,7 @@ public:
                     const std::string& file, int line) {
         static_assert(std::is_floating_point_v<T>,
                       "assertNear only works with floating point types");
-        tests_run_++;
+        _tests_run++;
         if (std::abs(expected - actual) > epsilon) {
             _failed_tests.push_back({_current_test_name, nullptr, file, line});
             std::cerr << Color::RED << "[  FAILED  ] " << Color::RESET << file << ":" << line
@@ -283,7 +283,7 @@ public:
     // 断言：指针为空
     template <typename T>
     void assertNull(T* ptr, const std::string& expr_str, const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
         if (ptr != nullptr) {
             _failed_tests.push_back({_current_test_name, nullptr, file, line});
             std::cerr << Color::RED << "[  FAILED  ] " << Color::RESET << file << ":" << line
@@ -296,7 +296,7 @@ public:
     // 断言：指针非空
     template <typename T>
     void assertNotNull(T* ptr, const std::string& expr_str, const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
         if (ptr == nullptr) {
             _failed_tests.push_back({_current_test_name, nullptr, file, line});
             std::cerr << Color::RED << "[  FAILED  ] " << Color::RESET << file << ":" << line
@@ -310,7 +310,7 @@ public:
     template <typename ExceptionType>
     void assertThrows(std::function<void()> test_func, const std::string& expr_str,
                       const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
         try {
             test_func();
             _failed_tests.push_back({_current_test_name, nullptr, file, line});
@@ -332,7 +332,7 @@ public:
     // 断言：不抛出异常
     void assertNoThrow(std::function<void()> test_func, const std::string& expr_str,
                        const std::string& file, int line) {
-        tests_run_++;
+        _tests_run++;
         try {
             test_func();
         } catch (const std::exception& e) {
@@ -356,8 +356,8 @@ public:
                   << "=======================================================" << Color::RESET
                   << std::endl;
 
-        int tests_passed = tests_run_ - _failed_tests.size();
-        std::cout << "Total tests: " << tests_run_ << std::endl;
+        size_t tests_passed = _tests_run - _failed_tests.size();
+        std::cout << "Total tests: " << _tests_run << std::endl;
         std::cout << Color::GREEN << "Passed: " << tests_passed << Color::RESET << std::endl;
 
         if (_failed_tests.size() > 0) {
@@ -370,9 +370,9 @@ public:
         }
 
         if (_failed_tests.empty()) {
-            std::cout << Color::GREEN << "\n✓ All tests passed!" << Color::RESET << std::endl;
+            std::cout << Color::GREEN << "\nAll tests passed!" << Color::RESET << std::endl;
         } else {
-            std::cout << Color::RED << "\n✗ Some tests failed." << Color::RESET << std::endl;
+            std::cout << Color::RED << "\nSome tests failed." << Color::RESET << std::endl;
             std::cout << Color::RED << "\nFailed Tests:" << Color::RESET << std::endl;
             for (const auto& test : _failed_tests) {
                 std::cout << " - " << test.name << " (" << test.file << ":" << test.line << ")"
@@ -386,14 +386,14 @@ public:
 
     // 重置计数器
     void RESET() {
-        tests_run_ = 0;
+        _tests_run = 0;
         _failed_tests.clear();
         _test_cases.clear();
         _current_test_name.clear();
     }
 
 private:
-    int tests_run_ = 0;
+    int _tests_run = 0;
     std::vector<TestCase> _test_cases;
     std::vector<TestCase> _failed_tests;
     std::string _current_test_name;
